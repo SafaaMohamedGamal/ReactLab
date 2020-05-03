@@ -1,0 +1,68 @@
+import React, {Component} from "react"
+
+class Login extends Component
+{
+  constructor(props)
+  {
+    super(props);
+    this.state = {
+      username: "",
+      password: ""
+    }
+  }
+
+  handleChange=(e)=>{
+    this.setState({
+      [e.target.name] : e.target.value
+    })
+  }
+
+  handleSubmit=(e)=>{
+    e.preventDefault();
+    fetch("http://todoapp.ahmedrohym.com/api.php?apicall=login", {
+      method: "POST",
+      // headers: [
+      //   {"Access-Control-Allow-Origin": "*"},
+      //   {"Content-Type": "application/json"},
+      // ],
+      body: JSON.stringify(this.state)
+    })
+    .then(response=>response.json())
+    .then(user=>console.log(user))
+    .catch(error=>{
+      console.log("error ", error);
+    });
+  }
+
+  render()
+  {
+    return (
+      <div className="container text-center">
+        <form>
+          <label>
+            username
+            <input
+            type="text"
+            name="username"
+            value={this.state.username}
+            onChange={this.handleChange}/>
+          </label>
+          <br />
+          <label>
+            password
+            <input
+            type="password"
+            name="password"
+            value={this.state.password}
+            onChange={this.handleChange}/>
+          </label>
+          <br />
+          <button  onClick={this.handleSubmit}>Submit</button>
+          <br />
+        </form>
+      </div>
+    );
+  }
+}
+
+export default Login
