@@ -1,4 +1,5 @@
 import React, {Component} from "react"
+import { Redirect } from 'react-router-dom'
 
 class Login extends Component
 {
@@ -7,7 +8,8 @@ class Login extends Component
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      redirect: false
     }
   }
 
@@ -28,11 +30,19 @@ class Login extends Component
       body: JSON.stringify(this.state)
     })
     .then(response=>response.json())
-    .then(user=>console.log(user))
+    .then((logged)=>{
+      let token = logged.user.token
+      let name = logged.user.username
+      console.log(logged.user);
+      localStorage.setItem('token', token);
+      localStorage.setItem('name', name);
+      this.props.loggedIn();
+    })
     .catch(error=>{
       console.log("error ", error);
     });
   }
+
 
   render()
   {

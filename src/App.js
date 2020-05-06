@@ -9,7 +9,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
 
 
@@ -162,8 +163,58 @@ class TodoAdd extends React.Component
   }
 }
 
-function Header()
+function LoggedIn(props)
 {
+  let logged = localStorage.getItem('token');
+  if (logged)
+  {
+    let name = localStorage.getItem('name');
+    return(<>
+        <li>
+          <span>{name}</span>
+        </li>
+        <li>
+          <Link to="/logout" onClick={props.loggedOut}>Logout</Link>
+        </li>
+    </>
+    );
+  }
+  else {
+    return(
+      <>
+        <li>
+          <Link to="/login">Login</Link>
+        </li>
+        <li>
+          <Link to="/register">Register</Link>
+        </li>
+    </>
+    );
+  }
+}
+
+
+class Header extends React.Component
+{
+  constructor()
+  {
+    super();
+    this.state={
+      redirect: false
+    }
+  }
+  loggedIn=()=>{
+    this.setState({redirect: true})
+    }
+  loggedOut=()=>{
+    this.setState({redirect: false})
+      let logged = localStorage.getItem('token');
+      if(logged){
+        localStorage.clear();
+      }
+    }
+
+  render(){
   return(
         <Router>
       <div>
@@ -175,12 +226,7 @@ function Header()
             <li>
               <Link to="/about">About</Link>
             </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/register">Register</Link>
-            </li>
+            <LoggedIn loggedOut={this.loggedOut}/>
           </ul>
         </nav>
 
@@ -194,15 +240,19 @@ function Header()
             <Register />
           </Route>
           <Route path="/login">
-            <Login />
+            {()=>this.state.redirect? <Redirect to='/' />:<Login loggedIn={this.loggedIn} />}
+          </Route>
+          <Route path="/logout">
+            {()=><Redirect to='/login' />}
           </Route>
           <Route path="/">
-            <BoxList />
+            {()=>this.state.redirect?<BoxList />:<Redirect to='/login' />}
           </Route>
         </Switch>
       </div>
     </Router>
   );
+  }
 }
 function Home() {
   return <h2>Home</h2>;
